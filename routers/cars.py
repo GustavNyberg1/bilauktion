@@ -1,6 +1,7 @@
 import secrets
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 
 from database import get_db
 from models import Car, CarStatus, Bid
@@ -19,8 +20,48 @@ def create_car(car: CarCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[CarOut])
-def list_cars(db: Session = Depends(get_db)):
-    return db.query(Car).filter(Car.status == CarStatus.active).all()
+def list_cars(
+    db: Session = Depends(get_db),
+    make: str | None = Query(default=None),
+    year_min: int | None = Query(default=None),
+    year_max: int | None = Query(default=None),
+    mileage_min: int | None = Query(default=None),
+    mileage_max: int | None = Query(default=None),
+    bid_min: float | None = Query(default=None),
+    bid_max: float | None = Query(default=None),
+    dragkrok: bool | None = Query(default=None),
+    vinterdack: bool | None = Query(default=None),
+):
+    q = db.query(Car).filter(Car.status == CarStatus.active)
+
+    if make:
+        q = q.filter(Car.make.ilike(f"%{make}%"))
+    if year_min is not None:
+        q = q.filter(Car.year >= year_min)
+    if year_max is not None:
+        q = q.filter(Car.year <= year_max)
+    if mileage_min is not None:
+        q = q.filter(Car.mileage >= mileage_min)
+    if mileage_max is not None:
+        q = q.filter(Car.mileage <= mileage_max)
+    if dragkrok is not None:
+        q = q.filter(Car.dragkrok == dragkrok)
+    if vinterdack is not None:
+        q = q.filter(Car.vinterdack == vinterdack)
+
+    if bid_min is not None or bid_max is not None:
+        highest_bid = (
+            db.query(Bid.car_id, func.max(Bid.amount).label("max_bid"))
+            .group_by(Bid.car_id)
+            .subquery()
+        )
+        q = q.join(highest_bid, Car.id == highest_bid.c.car_id)
+        if bid_min is not None:
+            q = q.filter(highest_bid.c.max_bid >= bid_min)
+        if bid_max is not None:
+            q = q.filter(highest_bid.c.max_bid <= bid_max)
+
+    return q.all()
 
 
 @router.get("/{car_id}", response_model=CarOut)
