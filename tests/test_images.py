@@ -12,13 +12,10 @@ def make_image_bytes(fmt="JPEG") -> bytes:
 
 CAR_PAYLOAD = {
     "reg_number": "IMG001",
-    "make": "Toyota",
-    "model": "Corolla",
-    "year": 2020,
     "mileage": 5000,
     "owner_name": "Kalle",
     "owner_email": "kalle@test.se",
-    "owner_phone": "070-0000000",
+    "contact_preference": "email",
 }
 
 

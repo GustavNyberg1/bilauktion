@@ -37,9 +37,9 @@ def test_login_wrong_password(client):
 
 def test_bid_requires_auth(client):
     car = client.post("/cars/", json={
-        "reg_number": "ABC123", "make": "Volvo", "model": "V70",
-        "year": 2018, "mileage": 8000, "owner_name": "Anna",
-        "owner_email": "anna@test.se", "owner_phone": "070-1234567",
+        "reg_number": "ABC123", "mileage": 8000,
+        "owner_name": "Anna", "owner_email": "anna@test.se",
+        "contact_preference": "email",
     })
     car_id = car.json()["id"]
     resp = client.post(f"/cars/{car_id}/bids", json={"amount": 50000})
@@ -48,9 +48,9 @@ def test_bid_requires_auth(client):
 
 def test_bid_with_auth(client, auth_headers):
     car = client.post("/cars/", json={
-        "reg_number": "DEF456", "make": "Saab", "model": "9-3",
-        "year": 2015, "mileage": 12000, "owner_name": "Bo",
-        "owner_email": "bo@test.se", "owner_phone": "070-7654321",
+        "reg_number": "DEF456", "mileage": 12000,
+        "owner_name": "Bo", "owner_phone": "070-7654321",
+        "contact_preference": "sms",
     })
     car_id = car.json()["id"]
     resp = client.post(f"/cars/{car_id}/bids", json={"amount": 75000}, headers=auth_headers)

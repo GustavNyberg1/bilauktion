@@ -12,25 +12,31 @@ class CarStatus(str, enum.Enum):
     expired = "expired"
 
 
+class ContactPreference(str, enum.Enum):
+    email = "email"
+    sms = "sms"
+
+
 class Car(Base):
     __tablename__ = "cars"
 
     id = Column(Integer, primary_key=True, index=True)
     reg_number = Column(String, unique=True, index=True, nullable=False)
-    make = Column(String, nullable=False)
-    model = Column(String, nullable=False)
-    year = Column(Integer, nullable=False)
+    make = Column(String, nullable=True)
+    model = Column(String, nullable=True)
+    year = Column(Integer, nullable=True)
     mileage = Column(Integer, nullable=False)
     description = Column(String, default="")
-    antal_nycklar = Column(Integer, default=1)
+    antal_nycklar = Column(Integer, nullable=True)
     vinterdack = Column(Boolean, default=False)
     sommardack = Column(Boolean, default=False)
     dragkrok = Column(Boolean, default=False)
     servicebehov = Column(Boolean, default=False)
     extra_info = Column(String, default="")
     owner_name = Column(String, nullable=False)
-    owner_email = Column(String, nullable=False)
-    owner_phone = Column(String, nullable=False)
+    owner_email = Column(String, nullable=True)
+    owner_phone = Column(String, nullable=True)
+    contact_preference = Column(Enum(ContactPreference), nullable=False)
     owner_token = Column(String, unique=True, index=True, nullable=False)
     status = Column(Enum(CarStatus), default=CarStatus.active, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
