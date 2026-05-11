@@ -26,6 +26,7 @@ class Car(Base):
     model = Column(String, nullable=True)
     year = Column(Integer, nullable=True)
     mileage = Column(Integer, nullable=False)
+    mileage_approximate = Column(Boolean, default=False)
     description = Column(String, default="")
     antal_nycklar = Column(Integer, nullable=True)
     vinterdack = Column(Boolean, default=False)

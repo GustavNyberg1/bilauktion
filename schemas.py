@@ -6,6 +6,7 @@ from models import CarStatus, ContactPreference
 class CarCreate(BaseModel):
     reg_number: str
     mileage: int
+    mileage_approximate: bool = False
     make: str | None = None
     model: str | None = None
     year: int | None = None
@@ -34,6 +35,7 @@ class CarOut(BaseModel):
     id: int
     reg_number: str
     mileage: int
+    mileage_approximate: bool
     make: str | None
     model: str | None
     year: int | None
